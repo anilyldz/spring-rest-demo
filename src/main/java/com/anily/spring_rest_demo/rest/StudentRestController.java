@@ -1,6 +1,7 @@
 package com.anily.spring_rest_demo.rest;
 
 import com.anily.spring_rest_demo.entity.Student;
+import jakarta.annotation.PostConstruct;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,15 +13,18 @@ import java.util.List;
 @RequestMapping("/api")
 public class StudentRestController {
 
+    private List<Student> students;
+
+    @PostConstruct
+    public void loadData() {
+        students = new ArrayList<>();
+        students.add(new Student("Ryneath", "Swiftsky"));
+        students.add(new Student("Danis", "Sageheart"));
+        students.add(new Student("Aleturas", "Silentshade"));
+    }
+
     @GetMapping("/students")
     public List<Student> getStudents() {
-        List<Student> students = new ArrayList<>();
-        Student student1 = new Student("Ryneath", "Swiftsky");
-        Student student2 = new Student("Danis", "Sageheart");
-        Student student3 = new Student("Aleturas", "Silentshade");
-        students.add(student1);
-        students.add(student2);
-        students.add(student3);
         return students;
     }
 }
