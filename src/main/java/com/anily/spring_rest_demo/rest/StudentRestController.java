@@ -2,11 +2,11 @@ package com.anily.spring_rest_demo.rest;
 
 import com.anily.spring_rest_demo.entity.Student;
 import jakarta.annotation.PostConstruct;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.chrono.ChronoLocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +31,23 @@ public class StudentRestController {
 
     @GetMapping("/students/{studentId}")
     public Student getStudent(@PathVariable int studentId) {
-        return students.get(studentId);
+        if (isValidPathVariable(studentId)){
+            return students.get(studentId);
+        } else {
+            throw new StudentNotFoundException("Student Not Found");
+        }
+    }
+
+    private boolean isValidPathVariable(int studentId) {
+        return studentId >= 0 && students.size() >= studentId;
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<StudentErrorResponse> handleException (StudentNotFoundException exc) {
+        StudentErrorResponse errorResponse = new StudentErrorResponse();
+        errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
+        errorResponse.setMessage(exc.getMessage());
+        errorResponse.setTimeStamp(System.currentTimeMillis());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 }
